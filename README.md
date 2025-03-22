@@ -33,30 +33,30 @@ security mechanisms: (i) keeping it simple: it is all about encrypting and decry
 (v) practical digital signatures: sign msg for Bob by Alice as *[data,H(data)=PK_alice(sgn)]=[data,H,sgn=SK_alice(H(data))]*;<br /><br />
 scale in distributed systems: at least 3 components including: #users or processes -size scalability, max distance bt nodes -geographical scalability, #administrative domains -administrative scalability; observation -most systems account only for size scalability, often a solution -multiple powerful servers operating independently in parallel, today, the challenge still lies in geographical and administrative scalability;<br /><br />
 size scalability: (i)root causes for scalability problems with centralized solutions including: the computational capacity, limited by cpus; the storage capacity, incorporating the transfer rate bt cpus and disks; the network bt user and centralized service;<br /><br />
-(ii) formal analysis: a centralized service can be modeled as a simple queuing system, reqs --> queue --> process --> response; assumptions and notations including: the queue has inifinite capacity, hence, arrival rate of reqs is not influenced by current length or what is being processed, arrival rate reqs as \lambda, processing capacity service as \mu reqs per second, hence, fraction of time having k reqs in the system defind as:
-\[
+(ii) formal analysis: a centralized service can be modeled as a simple queuing system, reqs --> queue --> process --> response; assumptions and notations including: the queue has inifinite capacity, hence, arrival rate of reqs is not influenced by current length or what is being processed, arrival rate reqs as $\lambda$, processing capacity service as $\mu$ reqs per second, hence, fraction of time having *k* reqs in the system defind as:
+$$
 \rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
-\]
+$$
 
 utilization *U* of a service is the fraction of time that it is busy:
-\[
+$$
 U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
-\]
+$$
 
 average number of reqs in the system:
-\[
+$$
 N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
-\]
+$$
 
 average throughput:
-\[
+$$
 X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
-\]
+$$
 
-response time -total time take to process a req after submission, with *S=1/\mu* being the service time:
-\[
+response time -total time take to process a req after submission, with *S=1/$\mu$* being the service time:
+$$
 R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
-\]
+$$
 
 observations -if *U* is small, response-to-response time is close to 1, meaning a req is immediately processed, if *U* goes up to 1, the system comes to a grinding halt, solution -decrease *S*;<br /><br />
 problems with geographical scalability including: cannot simply go from LAN to WAN -many distirbuted systems assume synchronous client-server interactions, where client sends req and waits for an answer, with latency may easily prohibit this scheme; WAN links are often inherently unreliable -simply moving streaming video from LAN to WAN is bound to fail; lack of multipoint comm, so that a simple search broadcast cannot be deployed, solution -develop separate naming and dir services(having their own scalability problems);<br /><br />
@@ -78,7 +78,17 @@ ubiquitous systems: core elements including: distribution -devices are networked
 [mobile computing, click to view](./img/mobile-computing.png): it is (i)a myriad of different mobile devices of smartphones, tablets, gps devices, remote controls, active badges, (ii)mobile implies that a device's location is exep to change over time, hence, change of local services, reachability, etc., keyword is discovery, (iii)maintaining stable comm can introduce serious problems, (iv)for a long time, research has focused on directly sharing resources bt mobile devices, it never became popular and is by now considered to be a fruitless path for research; bottomline -mobile devices set up connections to stationary servers, essentially bringing mobile computing in the position of clients of cloud-based services;<br /><br />
 sensor networks: the nodes to which sensors are attached are many(10s-1000s), simple(small mem/compute/comm capacity), often battery-powered(or even battery-less); [sensor networks as distributed db, click for 2 extremes](./img/sensor_networks_as_distributed_db-extreme.png); [the cloud-edge continuum, click for continuum](./img/cloud-edge-continuum);<br /><br />
 developing distributed systems: pitfalls: observation -many distributed systems are needlessly complex, caused by mistakes that required patching later on, many false assumptions are often made; false (and often hidden) assumptions including: the network is reliable, the network is secure, the network is homogeneous, the topology does not change, latency is zero, bdwidth is zero, transport cost is zero, there is 1 administrator;<br /><br />
-ic -不可分割地发生（表面上），一致 -不违反系统不变量，隔离 -不相互干扰，持久 -提交意味着更改是永久性的；<br /><br />
+地理可扩展性问题包括：不能简单地从 LAN 转到 WAN - 许多分布式系统假设同步客户端-服务器交互，客户端发送请求并等待答复，延迟可能很容易阻止这种方案；WAN 链接通常本质上不可靠 - 简单地将流视频从 LAN 移动到 WAN 注定会失败；缺乏多点通信，因此无法部署简单的搜索广播，解决方案 - 开发单独的命名和目录服务（具有自己的可扩展性问题）；<br /><br />
+管理可扩展性问题：本质 - 有关使用（以及付款）、管理和安全性的冲突政策；示例包括：计算网格 - 在不同域、共享设备之间共享昂贵的资源 - 如何控制、管理和使用构建为大规模共享传感器网络的共享射电望远镜？；例外 - 几个 p2p 网络包括：基于文件共享系统，例如 bittorrent、p2p 电话 -skype 的早期版本、对等辅助音频流 -例如 spotify，注意：最终用户协作而不是管理实体协作；<br /><br />
+扩展技术包括：隐藏通信延迟 - 使用异步通信，对传入响应有单独的处理程序，问题 - 并非每个应用程序都适合此模型；通过将计算移动到客户端来促进解决方案；在多台机器上划分数据和计算 - 将计算移动到客户端，例如 java 小程序和脚本、分散命名服务（例如 dns）、分散信息系统（例如 www）；通过在不同的机器上提供数据副本来实现复制和缓存 - 复制文件服务器和数据库、镜像网站、Web 缓存（在浏览器和代理中）、文件缓存（在服务器和客户端）；<br /><br />
+扩展是复制的问题，应用复制很容易，但有一点除外：拥有多个副本（缓存或复制）会导致不一致 - 修改一个副本会使该副本与其他副本不同，始终保持副本一致，并且通常需要对每次修改进行全局同步，全局同步会排除大规模解决方案；观察 - 如果我们能够容忍不一致，我们可能会减少对全局同步的需求，但容忍不一致取决于应用程序；<br /><br />
+并行计算：观察 -hp 分布式计算始于并行计算；多处理器和多核与多计算机：前者是共享内存-互连-处理器，后者是内存-处理器-互连；<br /><br />
+分布式共享内存系统：观察 - 与多计算机相比，多处理器相对容易编程，但在增加处理器（或核心）数量时会出现问题，解决方案 - 在多计算机之上实现共享内存模型；例如通过虚拟机技术 - 将所有主内存页面（来自不同的处理器）映射到 1 个虚拟地址空间，如果处理器 *A* 上的进程寻址位于处理器 *B* 上的页面 *P*，则 *A* 上的操作系统会从 *B* 捕获并获取 *P*，就像 *P* 位于本地堆栈上一样；问题 - 分布式共享内存的性能永远无法与多处理器相媲美，也无法满足程序员的需要，因此现在已被广泛抛弃；<br /><br />
+[集群计算，点击查看](./img/cluster-computing.png)：本质上是一组通过 LAN 连接的高端系统，它是 (i) 同质的 - 相同的操作系统，几乎相同的硬件；(ii) 单一或紧密耦合的管理节点；<br /><br />
+[网格计算，点击查看架构](./img/grid-computing-architecture.png)：下一步 - 来自各处的大量节点，它是 (i) 异构的；(ii) 分散在多个组织中；(iii) 可以轻松跨越广域网；注意：为了实现协作，网格通常使用虚拟组织，本质上，这是一组用户（或更好的是他们的 ID）的分组，允许对资源分配进行授权；<br /><br />
+集成应用程序：情况 - 组织面临许多联网应用程序，但实现互操作性却很痛苦；基本方法 - 联网应用程序是在服务器上运行的应用程序，使其服务可供远程客户端使用，简单集成 - 客户端组合（不同）应用程序的请求 --> 发送 --> 收集响应，并向用户呈现连贯的结果；下一步 - 允许直接应用程序到应用程序通信，从而实现 EAI - 企业应用程序集成：<br /><br />
+示例 EAI：（嵌套）事务：(i) 事务 - 原始和说明：BEGIN_TRANSACTION - 标记事务的开始，END_TRANSACTION - 终止事务并尝试提交，ABORT_TRANSACTION - 终止事务并恢复旧值，READ - 从文件、表或其他位置读取数据，WRITE - 将数据写入文件、表或其他位置；<br /><br />
+(ii) [问题 - 全有或全无，单击查看](./img/enterprise-application-integration-issue.png)：它是原子 -不可分割地发生（表面上），一致 -不违反系统不变量，隔离 -不相互干扰，持久 -提交意味着更改是永久性的；<br /><br />
 [TPM -事务处理监视器，单击查看](./img/transaction-processing-monitor.png)：观察 -通常，事务中涉及的数据分布在多个服务器上，TP监视器负责协调事务的执行；<br /><br />
 [中间件和EAI，单击查看](./img/middleware-and-enterprise_application_integration.png)：中间件为集成提供通信设施，包括：RPC -远程过程调用 -请求通过本地过程调用发送，打包为消息，处理，通过消息响应，并将结果作为调用返回； MOM - 面向消息的中间件 - 消息被发送到逻辑接触点（已发布），并转发给订阅的应用程序；<br /><br />
 如何集成应用程序？包括：文件传输 - 技术上简单但不灵活，（i）弄清楚文件格式和布局，（ii）弄清楚文件管理，（iii）更新传播和更新通知；共享数据库 - 更灵活，但仍然需要通用数据方案，否则存在瓶颈风险；rpc - 在需要执行一系列操作时有效；消息传递 -rpc 要求调用者和被调用者同时启动和运行，消息传递允许在时间和空间上解耦；<br /><br />
