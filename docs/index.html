@@ -1,77 +1,101 @@
-# Formal Analysis of a Centralized Service
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MathJax</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>Formal Analysis of a Centralized Service</h1>
+    <p>
+        A centralized service can be modeled as a simple queuing system: 
+        <strong>reqs → queue → process → response</strong>. The assumptions and notations include:
+    </p>
+    <ul>
+        <li>The queue has infinite capacity, so the arrival rate of requests (\( \lambda \)) is not influenced by the current queue length or what is being processed.</li>
+        <li>The processing capacity of the service is \( \mu \) requests per second.</li>
+    </ul>
 
-A centralized service can be modeled as a simple queuing system: **reqs → queue → process → response**. The assumptions and notations include:
+    <h2>Formulas</h2>
+    <p>
+        The fraction of time having \( k \) requests in the system is defined as:
+        \[
+        \rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
+        \]
+    </p>
+    <p>
+        The utilization \( U \) of a service is the fraction of time that it is busy:
+        \[
+        U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
+        \]
+    </p>
+    <p>
+        The average number of requests in the system:
+        \[
+        N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
+        \]
+    </p>
+    <p>
+        The average throughput:
+        \[
+        X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
+        \]
+    </p>
+    <p>
+        The response time \( R \) (total time taken to process a request after submission), with \( S = \frac{1}{\mu} \) being the service time:
+        \[
+        R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
+        \]
+    </p>
 
-- The queue has infinite capacity, so the arrival rate of requests (\( \lambda \)) is not influenced by the current queue length or what is being processed.
-- The processing capacity of the service is \( \mu \) requests per second.
+    <h2>Observations</h2>
+    <ul>
+        <li>If \( U \) is small, the response-to-service time ratio (\( \frac{R}{S} \)) is close to 1, meaning a request is immediately processed.</li>
+        <li>If \( U \) approaches 1, the system comes to a grinding halt (i.e., the response time \( R \) becomes very large).</li>
+    </ul>
 
-## Formulas
+    <h2>Solution</h2>
+    <p>
+        To avoid system overload, decrease the service time \( S \) (i.e., increase the processing capacity \( \mu \)):
+        \[
+        S = \frac{1}{\mu}
+        \]
+        By reducing \( S \), the utilization \( U = \frac{\lambda}{\mu} \) decreases, improving system performance.
+    </p>
 
-1. **Fraction of time having \( k \) requests in the system**:
-   \[
-   \rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
-   \]
+    <hr>
 
-2. **Utilization \( U \) of the service**:
-   \[
-   U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
-   \]
+    <h1>Flooding versus Random Walk</h1>
 
-3. **Average number of requests in the system**:
-   \[
-   N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
-   \]
+    <h2>Model</h2>
+    <p>
+        Assume \( N \) nodes and that each data item is replicated across \( r \) randomly chosen nodes.
+    </p>
 
-4. **Average throughput**:
-   \[
-   X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
-   \]
+    <h2>Random Walk</h2>
+    <p>
+        - \( \mathbb{P}[k] \): Probability that the item is found after \( k \) attempts:
+        \[
+        \mathbb{P}[k] = \frac{r}{N}\left(1 - \frac{r}{N}\right)^{k-1}.
+        \]
+        - \( S \) ("search size"): Expected number of nodes that need to be probed:
+        \[
+        S = \sum_{k=1}^{N} k \cdot \mathbb{P}[k] = \sum_{k=1}^{N} k \cdot \frac{r}{N}\left(1 - \frac{r}{N}\right)^{k-1} \approx \frac{N}{r} \text{ for } 1 \ll r \leq N.
+        \]
+    </p>
 
-5. **Response time \( R \)** (total time taken to process a request after submission), with \( S = \frac{1}{\mu} \) being the service time:
-   \[
-   R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
-   \]
+    <h2>Flooding</h2>
+    <p>
+        - Flood to \( d \) randomly chosen neighbors.
+        - After \( k \) steps, some \( R(k) = d \cdot (d - 1)^{k-1} \) nodes will have been reached (assuming \( k \) is small).
+        - With fraction \( \frac{r}{N} \) nodes having the data, if \( \frac{r}{N} \cdot R(k) \geq 1 \), we will have found the data item.
+    </p>
 
-## Observations
-
-- If \( U \) is small, the response-to-service time ratio (\( \frac{R}{S} \)) is close to 1, meaning a request is immediately processed.
-- If \( U \) approaches 1, the system comes to a grinding halt (i.e., the response time \( R \) becomes very large).
-
-## Solution
-
-To avoid system overload, decrease the service time \( S \) (i.e., increase the processing capacity \( \mu \)):
-\[
-S = \frac{1}{\mu}
-\]
-By reducing \( S \), the utilization \( U = \frac{\lambda}{\mu} \) decreases, improving system performance.
-
----
-
-# Flooding versus Random Walk
-
-## Model
-
-Assume \( N \) nodes and that each data item is replicated across \( r \) randomly chosen nodes.
-
-## Random Walk
-
-- \( \mathbb{P}[k] \): Probability that the item is found after \( k \) attempts:
-  \[
-  \mathbb{P}[k] = \frac{r}{N}\left(1 - \frac{r}{N}\right)^{k-1}.
-  \]
-- \( S \) ("search size"): Expected number of nodes that need to be probed:
-  \[
-  S = \sum_{k=1}^{N} k \cdot \mathbb{P}[k] = \sum_{k=1}^{N} k \cdot \frac{r}{N}\left(1 - \frac{r}{N}\right)^{k-1} \approx \frac{N}{r} \text{ for } 1 \ll r \leq N.
-  \]
-
-## Flooding
-
-- Flood to \( d \) randomly chosen neighbors.
-- After \( k \) steps, some \( R(k) = d \cdot (d - 1)^{k-1} \) nodes will have been reached (assuming \( k \) is small).
-- With fraction \( \frac{r}{N} \) nodes having the data, if \( \frac{r}{N} \cdot R(k) \geq 1 \), we will have found the data item.
-
-## Comparison
-
-- If \( \frac{r}{N} = 0.001 \), then \( S \approx 1000 \).
-- With flooding and \( d = 10, k = 4 \), we contact 7290 nodes.
-- **Random walks are more communication efficient**, but might take longer before they find the result.
+    <h2>Comparison</h2>
+    <p>
+        - If \( \frac{r}{N} = 0.001 \), then \( S \approx 1000 \).
+        - With flooding and \( d = 10, k = 4 \), we contact 7290 nodes.
+        - <strong>Random walks are more communication efficient</strong>, but might take longer before they find the result.
+    </p>
+</body>
+</html>
