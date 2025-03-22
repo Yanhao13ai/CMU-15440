@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MathJax</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>Formal Analysis of a Centralized Service</h1>
+    <p>
+        A centralized service can be modeled as a simple queuing system: 
+        <strong>reqs → queue → process → response</strong>. The assumptions and notations include:
+    </p>
+    <ul>
+        <li>The queue has infinite capacity, so the arrival rate of requests (\( \lambda \)) is not influenced by the current queue length or what is being processed.</li>
+        <li>The processing capacity of the service is \( \mu \) requests per second.</li>
+    </ul>
+
+    <h2>Formulas</h2>
+    <p>
+        The fraction of time having \( k \) requests in the system is defined as:
+        \[
+        \rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
+        \]
+    </p>
+    <p>
+        The utilization \( U \) of a service is the fraction of time that it is busy:
+        \[
+        U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
+        \]
+    </p>
+    <p>
+        The average number of requests in the system:
+        \[
+        N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
+        \]
+    </p>
+    <p>
+        The average throughput:
+        \[
+        X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
+        \]
+    </p>
+    <p>
+        The response time \( R \) (total time taken to process a request after submission), with \( S = \frac{1}{\mu} \) being the service time:
+        \[
+        R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
+        \]
+    </p>
+</body>
+</html>
