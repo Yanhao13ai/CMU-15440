@@ -33,32 +33,7 @@ security mechanisms: (i) keeping it simple: it is all about encrypting and decry
 (v) practical digital signatures: sign msg for Bob by Alice as *[data,H(data)=PK_alice(sgn)]=[data,H,sgn=SK_alice(H(data))]*;<br /><br />
 scale in distributed systems: at least 3 components including: #users or processes -size scalability, max distance bt nodes -geographical scalability, #administrative domains -administrative scalability; observation -most systems account only for size scalability, often a solution -multiple powerful servers operating independently in parallel, today, the challenge still lies in geographical and administrative scalability;<br /><br />
 size scalability: (i)root causes for scalability problems with centralized solutions including: the computational capacity, limited by cpus; the storage capacity, incorporating the transfer rate bt cpus and disks; the network bt user and centralized service;<br /><br />
-(ii) formal analysis: a centralized service can be modeled as a simple queuing system, reqs --> queue --> process --> response; assumptions and notations including: the queue has inifinite capacity, hence, arrival rate of reqs is not influenced by current length or what is being processed, arrival rate reqs as $\lambda$, processing capacity service as $\mu$ reqs per second, hence, fraction of time having *k* reqs in the system defind as:
-\[
-\rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
-\]
-
-utilization *U* of a service is the fraction of time that it is busy:
-\[
-U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
-\]
-
-average number of reqs in the system:
-\[
-N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
-\]
-
-average throughput:
-\[
-X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
-\]
-
-response time -total time take to process a req after submission, with *S=1/*$\mu$ being the service time:
-\[
-R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
-\]
-
-observations -if *U* is small, response-to-response time is close to 1, meaning a req is immediately processed, if *U* goes up to 1, the system comes to a grinding halt, solution -decrease *S*;<br /><br />
+(ii) [formal analysis, click to view](https://Yanhao13ai.github.io/CMU-15440/)<br /><br />
 problems with geographical scalability including: cannot simply go from LAN to WAN -many distirbuted systems assume synchronous client-server interactions, where client sends req and waits for an answer, with latency may easily prohibit this scheme; WAN links are often inherently unreliable -simply moving streaming video from LAN to WAN is bound to fail; lack of multipoint comm, so that a simple search broadcast cannot be deployed, solution -develop separate naming and dir services(having their own scalability problems);<br /><br />
 problems with administrative scalability: essence -conflicting policies concerning usage(and thus payment), mgt, and security; examples including: computational grids -share expensive resources bt different domains, shared equipment -how to control, manage, and use a shared radio telescope constructed as large-scale shared sensor network?; exception -several p2p networks including: file-sharing systems -based, such as on bittorrent, p2p telephony -early versions of skype, peer-assisted audio streaming -such as spotify, note: end users collaborate and not administrative entities collaborate;<br /><br />
 techniques for scaling including: hide comm latencies -make use of asynchronous comm, have separate handler for incoming response, problem -not every application fits this model; facilitate solution by moving computations to client; partition data and computations across multiple machines -move computations to clients such as java applets and scripts, decentralized naming services such as dns, decentralized info systems such as www; replication and caching by making copies of data available at different machines -replicated file servers and db, mirrored websites, web caches(in browsers and proxies), file caching(at server and client);<br /><br />
