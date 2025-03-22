@@ -34,19 +34,29 @@ security mechanisms: (i) keeping it simple: it is all about encrypting and decry
 scale in distributed systems: at least 3 components including: #users or processes -size scalability, max distance bt nodes -geographical scalability, #administrative domains -administrative scalability; observation -most systems account only for size scalability, often a solution -multiple powerful servers operating independently in parallel, today, the challenge still lies in geographical and administrative scalability;<br /><br />
 size scalability: (i)root causes for scalability problems with centralized solutions including: the computational capacity, limited by cpus; the storage capacity, incorporating the transfer rate bt cpus and disks; the network bt user and centralized service;<br /><br />
 (ii) formal analysis: a centralized service can be modeled as a simple queuing system, reqs --> queue --> process --> response; assumptions and notations including: the queue has inifinite capacity, hence, arrival rate of reqs is not influenced by current length or what is being processed, arrival rate reqs as $\lambda$, processing capacity service as $\mu$ reqs per second, hence, fraction of time having *k* reqs in the system defind as:
-ρₖ = (1 - λ/μ) * (λ/μ)^k
+\[
+\rho _ { k } = \left( 1 - \frac { \lambda } { \mu } \right) \left( \frac { \lambda } { \mu } \right) ^ { k }
+\]
 
 utilization *U* of a service is the fraction of time that it is busy:
-U = Σₖ₌₁ pₖ = 1 - ρ₀ = λ/μ ⇒ pₖ = (1 - U) * U^k
+\[
+U = \sum _ { k > 0 } p _ { k } = 1 - \rho _ { 0 } = \frac { \lambda } { \mu } \Rightarrow p _ { k } = ( 1 - U ) U ^ { k }
+\]
 
 average number of reqs in the system:
-N = Σₖ₌₀ k * pₖ = Σₖ₌₀ k * (1 - U) * U^k = (1 - U) * Σₖ₌₀ k * U^k = (1 - U) * U / (1 - U)^2 = U / (1 - U)
+\[
+N = \sum_{k \geq 0} k \cdot p_k = \sum_{k \geq 0} k \cdot (1-U) U^k = (1-U) \sum_{k \geq 0} k \cdot U^k = \frac{(1-U)U}{(1-U)^2} = \frac{U}{1-U}
+\]
 
 average throughput:
-X = U * μ (server at work) + (1 - U) * 0 (server idle) = (λ/μ) * μ = λ
+\[
+X = \underbrace{U \cdot \mu}_{\text{server at work}} + \underbrace{(1 - U) \cdot 0}_{\text{server idle}} = \frac{\lambda}{\mu} \cdot \mu = \lambda
+\]
 
 response time -total time take to process a req after submission, with *S=1/*$\mu$ being the service time:
-R = N̅ / X̅ = S / (1 - U) ⇒ R/S = 1 / (1 - U)
+\[
+R = \frac{\overline{N}}{\overline{X}} = \frac{S}{1-U} \Rightarrow \frac{R}{S} = \frac{1}{1-U}
+\]
 
 observations -if *U* is small, response-to-response time is close to 1, meaning a req is immediately processed, if *U* goes up to 1, the system comes to a grinding halt, solution -decrease *S*;<br /><br />
 problems with geographical scalability including: cannot simply go from LAN to WAN -many distirbuted systems assume synchronous client-server interactions, where client sends req and waits for an answer, with latency may easily prohibit this scheme; WAN links are often inherently unreliable -simply moving streaming video from LAN to WAN is bound to fail; lack of multipoint comm, so that a simple search broadcast cannot be deployed, solution -develop separate naming and dir services(having their own scalability problems);<br /><br />
